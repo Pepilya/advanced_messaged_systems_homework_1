@@ -1,0 +1,64 @@
+version: "3"
+
+services:
+  activemq:
+    image: rmohr/activemq:5.10.0
+    container_name: activemq
+    volumes:
+      - "./activemq/activemq.xml:/conf/activemq.xml"
+    ports:
+      - "61616:61616" # broker (admin:adminactivemq)(amq:amq)
+      - "8161:8161"   # web    http://boot2docker:8161/admin (admin:admin)
+  producer:
+    container_name: producer
+    build: producer/
+    ports:
+      - 8080:8080
+    environment:
+      - spring.activemq.broker-url=tcp://activemq:61616
+    depends_on:
+      - activemq
+  listener_1_instance_1:
+    container_name: listener_1_instance_1
+    build: listener/
+    ports:
+      - 8081:8081
+    environment:
+      - spring.activemq.broker-url=tcp://activemq:61616
+      - spring.activemq.listener.destination=Consumer.listener_1.VirtualTopic.MAIN
+      - spring.broker-url=tcp://activemq:61616
+    depends_on:
+      - activemq
+  listener_1_instance_2:
+    build: listener/
+    container_name: listener_1_instance_2
+    ports:
+      - 8082:8081
+    environment:
+      - spring.activemq.broker-url=tcp://activemq:61616
+      - spring.activemq.listener.destination=Consumer.listener_1.VirtualTopic.MAIN
+      - spring.broker-url=tcp://activemq:61616
+    depends_on:
+      - activemq
+  listener_2_instance_1:
+    build: listener/
+    container_name: listener_2_instance_1
+    ports:
+      - 8083:8081
+    environment:
+      - spring.activemq.broker-url=tcp://activemq:61616
+      - spring.activemq.listener.destination=Consumer.listener_2.VirtualTopic.MAIN
+      - spring.broker-url=tcp://activemq:61616
+    depends_on:
+      - activemq
+  listener_2_instance_2:
+    build: listener/
+    container_name: listener_4
+    ports:
+      - 8084:8081
+    environment:
+      - spring.activemq.broker-url=tcp://activemq:61616
+      - spring.activemq.listener.destination=Consumer.listener_2.VirtualTopic.MAIN
+      - spring.broker-url=tcp://activemq:61616
+    depends_on:
+      - activemq
