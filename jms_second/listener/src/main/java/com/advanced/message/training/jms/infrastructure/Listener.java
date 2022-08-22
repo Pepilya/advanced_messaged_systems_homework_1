@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class Listener {
 
-    private static final Integer MAX_PRODUCT_VALUE = 1000;
+    private static final Integer MAX_PRODUCT_AMOUNT = 1000;
 
     @JmsListener(destination = "order.request")
     @SendTo("order.response")
     public Message<Order> processOrder(Order order) {
         log.info("Register user with name == {}", order.getOrderId());
-        if (order.getAmount() > MAX_PRODUCT_VALUE) {
+        if (order.getAmount() > MAX_PRODUCT_AMOUNT) {
             order.setStatus(Order.Status.DECLINED);
             return MessageBuilder.withPayload(order).build();
         }
