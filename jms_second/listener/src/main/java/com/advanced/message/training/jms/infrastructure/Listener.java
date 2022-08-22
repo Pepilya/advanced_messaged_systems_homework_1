@@ -18,7 +18,7 @@ public class Listener {
     @SendTo("order.response")
     public Message<Order> processOrder(Order order) {
         log.info("Register user with name == {}", order.getOrderId());
-        if (order.getAmount() > 1000) {
+        if (order.getAmount() > MAX_PRODUCT_VALUE) {
             order.setStatus(Order.Status.DECLINED);
             return MessageBuilder.withPayload(order).build();
         }
